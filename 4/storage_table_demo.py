@@ -8,15 +8,22 @@
 # This script sample is released under the MIT license. For more information,
 # see https://github.com/fouldsy/azure-mol-samples/blob/master/LICENSE
 
-import string,random,time,azurerm,json,subprocess
+import string,random,time,azurerm,json,subprocess,os
 
 from azure.cosmosdb.table.tableservice import TableService
 from azure.cosmosdb.table.models import Entity
 
+tenant_id = os.environ['TENANT_ID']
+app_id = os.environ['APP_ID']
+app_secret = os.environ['APP_SECRET']
+subscription_id = os.environ['SUBSCRIPTION_ID']
+
+
 # Define variables to handle Azure authentication
-get_token_cli = subprocess.Popen(['az account get-access-token | jq  -r .accessToken'], stdout=subprocess.PIPE, shell=True)
-auth_token = str(get_token_cli.communicate()[0]).rstrip()
-subscription_id = azurerm.get_subscription_from_cli()
+#get_token_cli = subprocess.Popen(['az account get-access-token | jq  -r .accessToken'], stdout=subprocess.PIPE, shell=True)
+#auth_token = str(get_token_cli.communicate()[0]).rstrip()
+#subscription_id = azurerm.get_subscription_from_cli()
+auth_token = azurerm.get_access_token(tenant_id, app_id, app_secret)
 
 # Define variables with random resource group and storage account names
 resourcegroup_name = 'azuremol'+''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(6))
@@ -31,7 +38,7 @@ response = azurerm.create_resource_group(auth_token, subscription_id, resourcegr
 if response.status_code == 200 or response.status_code == 201:
     print('Resource group: ' + resourcegroup_name + ' created successfully.')
 else:
-    print('Error creating resource group')
+    print('Error creating resource group ' + str(response.status_code) )
 
 # Create a storage account for our demo
 response = azurerm.create_storage_account(auth_token, subscription_id, resourcegroup_name, storageaccount_name,  location, storage_type='Standard_LRS')
@@ -47,7 +54,8 @@ else:
 # Use the Azure Storage Storage SDK for Python to create a Table
 ###
 print('\nLet\'s create an Azure Storage Table to store some data.')
-raw_input('Press Enter to continue...')
+#raw_input('Press Enter to continue...')
+input('Press Enter to continue...')
 
 # Each storage account has a primary and secondary access key.
 # These keys are used by aplications to access data in your storage account, such as Tables.
@@ -72,7 +80,8 @@ time.sleep(1)
 # Use the Azure Storage Storage SDK for Python to create some entries in the Table
 ###
 print('Now let\'s add some entries to our Table.\nRemember, Azure Storage Tables is a NoSQL datastore, so this is similar to adding records to a database.')
-raw_input('Press Enter to continue...')
+#raw_input('Press Enter to continue...')
+input('Press Enter to continue...')
 
 # Each entry in a Table is called an 'entity'. 
 # Here, we add an entry for first pizza with two pieces of data - the name, and the cost
@@ -112,7 +121,8 @@ time.sleep(1)
 # Use the Azure Storage Storage SDK for Python to query for entities in our Table
 ###
 print('With some data in our Azure Storage Table, we can query the data.\nLet\'s see what the pizza menu looks like.')
-raw_input('Press Enter to continue...')
+#raw_input('Press Enter to continue...')
+input('Press Enter to continue...')
 
 # In this query, you define the partition key to search within, and then which properties to retrieve
 # Structuring queries like this improves performance as your application scales up and keeps the queries efficient
@@ -129,7 +139,8 @@ time.sleep(1)
 # Although the actual cost is minimal (fractions of a cent per month) for the three entities we created, it's good to clean up resources when you're done
 ###
 print('\nThis is a basic example of how Azure Storage Tables behave like a database.\nTo keep things tidy, let\'s clean up the Azure Storage resources we created.')
-raw_input('Press Enter to continue...')
+#raw_input('Press Enter to continue...')
+input('Press Enter to continue...')
 
 response = table_service.delete_table('pizzatable')
 if response == True:
