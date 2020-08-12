@@ -10,7 +10,6 @@ az vm create \
    --resource-group azuremolchapter4 \
    --name storagevm \
    --image UbuntuLTS \
-   --admin-username adminuser \
    --admin-username azuremol \
    --authentication-type ssh \
    --ssh-key-value /root/.ssh/id_rsa.pub \
